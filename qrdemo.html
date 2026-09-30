@@ -1,0 +1,254 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>RONDA — Exemplo de QR Code</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Onest:wght@400;500;600;700&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcode-generator/1.0.3/qrcode.min.js"></script>
+<style>
+  :root{
+    --bg:#E2E6DE; --surface:#F7F6F1; --surface-2:#EEEBE1;
+    --ink:#14161A; --ink-soft:#5B5E66; --ink-faint:#8A8D94; --line:#C9CCD3;
+    --accent:#1737E3; --accent-ink:#FFFFFF;
+    --ok:#2E6B4C; --ok-bg:#E1EEE6; --alert:#AE3626; --alert-bg:#F5E2DE;
+  }
+  *{box-sizing:border-box;}
+  html,body{margin:0;padding:0;}
+  body{background:var(--bg);color:var(--ink);font-family:'Onest',sans-serif;-webkit-font-smoothing:antialiased;min-height:100vh;
+    padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px);}
+  #app{max-width:520px;margin:0 auto;padding:0 16px 60px;}
+  .banner{
+    background:var(--accent);color:#fff;margin:0 -16px 20px;padding:20px 16px 18px;
+    border-bottom:2px solid var(--ink);
+  }
+  .banner .mark{font-weight:700;font-size:26px;letter-spacing:.5px;}
+  .banner .sub{font-size:13px;color:rgba(255,255,255,.82);margin-top:2px;}
+  .noteBox{
+    background:var(--pending-bg,#F1E8CE);border:1px solid #C7A93B;color:#7A5E0E;
+    font-size:12.5px;padding:10px 12px;border-radius:2px;margin-bottom:20px;
+  }
+  h2{font-size:19px;margin:0 0 6px;font-weight:600;}
+  p{font-size:13.5px;color:var(--ink-soft);line-height:1.5;margin:0 0 16px;}
+  .card{background:var(--surface);border:1px solid var(--line);border-radius:2px;padding:16px;margin-bottom:16px;}
+  .qrRow{display:flex;gap:14px;align-items:center;}
+  .qrRow img{width:110px;height:110px;flex-shrink:0;border:1px solid var(--line);background:#fff;}
+  .qrInfo .loc{font-weight:600;font-size:15px;margin-bottom:2px;}
+  .qrInfo .breadcrumb{font-size:12.5px;color:var(--ink-faint);margin-bottom:8px;}
+  .qrInfo a{font-size:12px;color:var(--accent);word-break:break-all;}
+  .field{margin-bottom:16px;}
+  .field label{display:block;font-size:13px;font-weight:600;color:var(--ink-soft);margin-bottom:6px;}
+  .field input[type=text], .field textarea, .field select{
+    width:100%;border:1px solid var(--line);border-radius:2px;padding:10px 11px;
+    font-size:15px;background:var(--surface);color:var(--ink);font-family:inherit;
+  }
+  .field textarea{min-height:80px;resize:vertical;}
+  .locHeader{
+    background:var(--ok-bg);border:1px solid var(--ok);border-radius:2px;
+    padding:12px 14px;margin-bottom:20px;
+  }
+  .locHeader .k{font-size:11px;color:var(--ok);text-transform:uppercase;letter-spacing:.4px;font-weight:600;}
+  .locHeader .v{font-size:17px;color:var(--ok);font-weight:700;}
+  .btn{
+    display:inline-flex;align-items:center;gap:7px;border-radius:2px;border:1px solid var(--ink);
+    padding:11px 18px;font-size:15px;font-weight:500;background:var(--ink);color:var(--surface);
+    cursor:pointer;width:100%;justify-content:center;
+  }
+  .btn.primary{background:var(--accent);border-color:var(--accent);color:#fff;}
+  .photoRow{display:flex;gap:8px;margin-top:8px;}
+  .photoThumb{width:70px;height:70px;border-radius:2px;overflow:hidden;border:1px solid var(--line);}
+  .photoThumb img{width:100%;height:100%;object-fit:cover;display:block;}
+  .addPhotoBtn{
+    width:70px;height:70px;border-radius:2px;border:1px dashed var(--ink-faint);
+    background:var(--surface);display:flex;align-items:center;justify-content:center;
+    font-size:22px;color:var(--ink-soft);
+  }
+  .confirmBox{background:var(--ok-bg);border:2px solid var(--ok);border-radius:2px;padding:16px;text-align:center;}
+  .confirmBox .big{font-size:18px;font-weight:700;color:var(--ok);margin-bottom:6px;}
+  .backLink{display:inline-block;margin-top:16px;font-size:13.5px;color:var(--accent);}
+  .demoList{margin-top:24px;}
+  .demoItem{font-size:12.5px;color:var(--ink-soft);border-bottom:1px solid var(--line);padding:8px 0;}
+</style>
+</head>
+<body>
+<div id="app"></div>
+<script>
+(function(){
+"use strict";
+
+/* Salas de exemplo — isso é só pra demonstração, não tem nenhuma ligação
+   com o app real do RONDA nem com o Firebase de vocês. */
+var DEMO_SALAS = [
+  { slug:"a-at01", predio:"Prédio Principal (A) — Sede Call Back", andar:"Térreo", sala:"AT.01 · Banheiro Masculino" },
+  { slug:"ceven-b105", predio:"Ceven", andar:"1º andar", sala:"B1.05 · Área Técnica" },
+  { slug:"amarela-fta03", predio:"Casa Amarela (F)", andar:"Térreo entrada A", sala:"FTA.03 · Banheiro masculino PCD" }
+];
+var CATEGORIAS = ["Porta / Maçaneta","Iluminação","Hidráulica","Elétrica","Mobiliário","Limpeza","Segurança","Ar-condicionado","Piso / Estrutura","Outro"];
+var DEMO_KEY = "ronda-qr-demo-exemplos";
+
+function getDemoList(){
+  try{ return JSON.parse(localStorage.getItem(DEMO_KEY) || "[]"); }catch(e){ return []; }
+}
+function saveDemoList(list){
+  try{ localStorage.setItem(DEMO_KEY, JSON.stringify(list)); }catch(e){}
+}
+function escapeHtml(s){
+  return (s||"").toString().replace(/[&<>"']/g, function(c){
+    return {"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c];
+  });
+}
+function fmtDate(iso){
+  try{
+    var d = new Date(iso);
+    return d.toLocaleDateString('pt-BR') + " " + d.toLocaleTimeString('pt-BR',{hour:'2-digit',minute:'2-digit'});
+  }catch(e){ return iso; }
+}
+
+var params = new URLSearchParams(location.search);
+var slug = params.get("sala");
+var current = DEMO_SALAS.filter(function(s){ return s.slug === slug; })[0];
+
+function render(){
+  var app = document.getElementById("app");
+  if(current){
+    app.innerHTML = renderForm(current);
+    bindForm(current);
+  }else{
+    app.innerHTML = renderSelector();
+    bindSelector();
+  }
+}
+
+function renderSelector(){
+  var rows = DEMO_SALAS.map(function(s){
+    var url = location.origin + location.pathname + "?sala=" + s.slug;
+    return (
+      '<div class="card">' +
+        '<div class="qrRow">' +
+          '<div id="qr-' + s.slug + '"></div>' +
+          '<div class="qrInfo">' +
+            '<div class="loc">' + escapeHtml(s.sala) + '</div>' +
+            '<div class="breadcrumb">' + escapeHtml(s.predio) + ' · ' + escapeHtml(s.andar) + '</div>' +
+            '<a href="' + url + '">Abrir sem escanear →</a>' +
+          '</div>' +
+        '</div>' +
+      '</div>'
+    );
+  }).join("");
+
+  return (
+    '<div class="banner"><div class="mark">RONDA</div><div class="sub">Exemplo — reporte via QR Code</div></div>' +
+    '<div class="noteBox">🧪 Isso é só um protótipo de demonstração. Não está ligado ao app real nem ao Firebase de vocês — nada aqui afeta os dados de verdade.</div>' +
+    '<h2>Escaneie um dos QR codes de exemplo</h2>' +
+    '<p>Cada um representa uma sala diferente. Escaneia com a câmera do celular pra ver como ficaria o formulário simplificado, sem precisar fazer login.</p>' +
+    rows +
+    renderDemoHistory()
+  );
+}
+
+function renderDemoHistory(){
+  var list = getDemoList();
+  if(list.length===0) return "";
+  return (
+    '<div class="demoList">' +
+      '<h2 style="font-size:15px;">Exemplos enviados neste navegador (' + list.length + ')</h2>' +
+      list.slice().reverse().map(function(e){
+        return '<div class="demoItem"><strong>' + escapeHtml(e.nome) + '</strong> · ' + escapeHtml(e.sala) + ' · ' + escapeHtml(e.categoria) + ' · ' + fmtDate(e.data) + '<br>' + escapeHtml(e.descricao) + '</div>';
+      }).join("") +
+    '</div>'
+  );
+}
+
+function bindSelector(){
+  DEMO_SALAS.forEach(function(s){
+    var url = location.origin + location.pathname + "?sala=" + s.slug;
+    try{
+      var qr = qrcode(0, "M");
+      qr.addData(url);
+      qr.make();
+      document.getElementById("qr-" + s.slug).innerHTML = qr.createImgTag(3, 4);
+    }catch(e){ console.error(e); }
+  });
+}
+
+function renderForm(s){
+  return (
+    '<div class="banner"><div class="mark">RONDA</div><div class="sub">Exemplo — reporte via QR Code</div></div>' +
+    '<div class="noteBox">🧪 Protótipo de demonstração — o que você enviar aqui fica salvo só neste navegador, pra você ver como ficaria. Não vai pro sistema real.</div>' +
+    '<div class="locHeader">' +
+      '<div class="k">Você está reportando um problema em</div>' +
+      '<div class="v">' + escapeHtml(s.sala) + '</div>' +
+      '<div style="font-size:13px;color:var(--ok);">' + escapeHtml(s.predio) + ' · ' + escapeHtml(s.andar) + '</div>' +
+    '</div>' +
+    '<div id="formArea">' +
+      '<div class="field"><label for="dNome">Seu nome</label><input type="text" id="dNome" placeholder="Como você quer aparecer"></div>' +
+      '<div class="field"><label for="dCategoria">Categoria</label><select id="dCategoria">' +
+        CATEGORIAS.map(function(c){ return '<option value="' + escapeHtml(c) + '">' + c + '</option>'; }).join("") +
+      '</select></div>' +
+      '<div class="field"><label for="dDescricao">Descreva o problema</label><textarea id="dDescricao" placeholder="O que você viu?"></textarea></div>' +
+      '<div class="field"><label>Foto (opcional)</label><div class="photoRow" id="photoRow">' +
+        '<label class="addPhotoBtn">＋<input type="file" accept="image/*" capture="environment" id="dFoto" style="display:none"></label>' +
+      '</div></div>' +
+      '<button class="btn primary" id="btnEnviar">Enviar</button>' +
+      '<a class="backLink" href="' + location.pathname + '">← Ver outros exemplos de QR code</a>' +
+    '</div>'
+  );
+}
+
+var pendingPhoto = null;
+
+function bindForm(s){
+  var fotoInput = document.getElementById("dFoto");
+  if(fotoInput) fotoInput.onchange = function(e){
+    var file = e.target.files[0];
+    if(!file) return;
+    var reader = new FileReader();
+    reader.onload = function(ev){
+      var img = new Image();
+      img.onload = function(){
+        var scale = Math.min(1, 300/img.width);
+        var canvas = document.createElement("canvas");
+        canvas.width = img.width*scale; canvas.height = img.height*scale;
+        canvas.getContext("2d").drawImage(img,0,0,canvas.width,canvas.height);
+        pendingPhoto = canvas.toDataURL("image/jpeg",0.5);
+        document.getElementById("photoRow").innerHTML =
+          '<div class="photoThumb"><img src="' + pendingPhoto + '"></div>';
+      };
+      img.src = ev.target.result;
+    };
+    reader.readAsDataURL(file);
+  };
+
+  var btn = document.getElementById("btnEnviar");
+  if(btn) btn.onclick = function(){
+    var nome = document.getElementById("dNome").value.trim();
+    var categoria = document.getElementById("dCategoria").value;
+    var descricao = document.getElementById("dDescricao").value.trim();
+    if(!nome || !descricao){
+      alert("Preenche pelo menos o nome e a descrição (é só o exemplo, mas vamos simular a validação real).");
+      return;
+    }
+    var list = getDemoList();
+    list.push({
+      sala: s.sala, predio: s.predio, andar: s.andar,
+      nome: nome, categoria: categoria, descricao: descricao,
+      foto: pendingPhoto, data: new Date().toISOString()
+    });
+    saveDemoList(list);
+    pendingPhoto = null;
+    document.getElementById("app").innerHTML =
+      '<div class="banner"><div class="mark">RONDA</div><div class="sub">Exemplo — reporte via QR Code</div></div>' +
+      '<div class="confirmBox">' +
+        '<div class="big">✓ Enviado (exemplo)</div>' +
+        '<p style="margin:0;">No app de verdade, isso criaria um chamado automaticamente com o local já preenchido, sem precisar de login.</p>' +
+      '</div>' +
+      '<a class="backLink" href="' + location.pathname + '">← Ver outros exemplos de QR code</a>';
+  };
+}
+
+render();
+})();
+</script>
+</body>
+</html>
