@@ -151,6 +151,44 @@
   .confirmTag{display:inline-flex;align-items:center;gap:4px;color:var(--alert);font-weight:600;}
   .resolvedCard .thumb,.resolvedCard .thumbPlaceholder{opacity:.55;}
   .resolvedCard .desc{color:var(--ink-faint);}
+  .slaChip{display:inline-flex;align-items:center;gap:5px;margin-top:6px;font-size:12px;font-weight:700;padding:3px 9px;border-radius:20px;border:1px solid;}
+  .slaChip.ok{background:var(--ok-bg);color:var(--ok);border-color:var(--ok);}
+  .slaChip.warn{background:#FBEFCF;color:#8C5A00;border-color:#C98A00;}
+  .viewTabs{display:flex;margin-bottom:16px;border-bottom:2px solid var(--ink);}
+  .vtab{background:none;border:none;border-bottom:3px solid transparent;margin-bottom:-2px;padding:10px 20px;font-size:15px;font-weight:600;color:var(--ink-soft);cursor:pointer;font-family:inherit;}
+  .vtab.active{color:var(--ink);border-bottom-color:var(--accent);}
+  .dashBar{display:flex;gap:14px;align-items:flex-end;justify-content:space-between;flex-wrap:wrap;margin-bottom:16px;}
+  .dashFilters{display:flex;gap:12px;flex-wrap:wrap;}
+  .dashFilters .field{margin-bottom:0;min-width:160px;}
+  .kpiGrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:12px;margin-bottom:16px;}
+  .kpi{background:var(--surface);border:1px solid var(--line);border-radius:2px;padding:14px;}
+  .kpi .kv{font-size:30px;font-weight:700;line-height:1.1;}
+  .kpi .kv.blue{color:var(--accent);} .kpi .kv.ok{color:var(--ok);} .kpi .kv.bad{color:var(--alert);}
+  .kpi .kl{font-size:12.5px;color:var(--ink-soft);margin-top:4px;}
+  .chartGrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(440px,100%),1fr));gap:14px;}
+  .chartCard{background:var(--surface);border:1px solid var(--line);border-radius:2px;padding:14px;}
+  .chartHead{display:flex;justify-content:space-between;align-items:center;gap:8px;font-weight:600;font-size:15px;margin-bottom:8px;}
+  .iconBtn.small{width:30px;height:30px;}
+  .chartSvg svg{width:100%;height:auto;display:block;background:#fff;}
+  .lateTable{width:100%;border-collapse:collapse;font-size:13.5px;}
+  .lateTable th{text-align:left;font-size:11.5px;color:var(--ink-faint);text-transform:uppercase;letter-spacing:.4px;padding:6px 8px;border-bottom:1px solid var(--line);}
+  .lateTable td{padding:8px;border-bottom:1px solid var(--line);}
+  .lateTable tbody tr{cursor:pointer;}
+  .lateTable tbody tr:hover{background:var(--surface-2);}
+  .slaChip.big{font-size:13.5px;padding:5px 12px;}
+  .qrTag{display:inline-block;background:var(--ink);color:#fff;font-size:10.5px;font-weight:700;letter-spacing:.4px;text-transform:uppercase;padding:2px 7px;border-radius:2px;margin-right:4px;}
+  .slaChip.late{background:var(--alert-bg);color:var(--alert);border-color:var(--alert);}
+  .card.slaLate{border:2px solid var(--alert);}
+  .groupHead{display:flex;align-items:baseline;gap:10px;margin:26px 0 10px;padding-bottom:6px;border-bottom:2px solid var(--ink);}
+  .groupHead.first{margin-top:0;}
+  .groupHead .gTitle{font-weight:700;font-size:16px;text-transform:uppercase;letter-spacing:.3px;}
+  .groupHead .gCount{font-size:12.5px;color:var(--ink-soft);}
+  .groupHead .gLate{font-size:12px;font-weight:700;color:var(--alert);margin-left:auto;}
+  .dayHead{font-size:12px;font-weight:600;color:var(--ink-soft);text-transform:uppercase;letter-spacing:.4px;margin:14px 0 8px;}
+  .card.finalCard{filter:grayscale(1);background:#E6E6E6;}
+  .finalBand{background:#4B4F57;color:#fff;font-size:11.5px;font-weight:700;letter-spacing:.6px;text-transform:uppercase;padding:6px 12px;display:flex;align-items:center;gap:6px;}
+  .finalBand.detail{margin:0 0 16px;padding:10px 14px;font-size:12.5px;}
+  .loc,.sheetHead h2,.disp{text-transform:uppercase;}
   .osBadge{
     display:inline-flex;align-items:center;gap:6px;margin-top:6px;
     background:var(--ok-bg);color:var(--ok);border:1px solid var(--ok);
@@ -272,7 +310,7 @@
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.13.2/firebase-app.js";
 import {
-  getFirestore, collection, addDoc, updateDoc, doc,
+  getFirestore, collection, addDoc, updateDoc, doc, deleteDoc,
   onSnapshot, query, orderBy, arrayUnion
 } from "https://www.gstatic.com/firebasejs/10.13.2/firebase-firestore.js";
 import {
@@ -454,6 +492,7 @@ const ICON = {
   copy:'<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="1"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>',
   download:'<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>',
   check:'<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>',
+  trash:'<svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/><path d="M10 11v6M14 11v6"/><path d="M9 6V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"/></svg>',
   image:'<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>'
 };
 
@@ -468,6 +507,9 @@ let state = {
   showBanner:false,
   detailId:null,
   connError:false,
+  view:"lista",
+  dash:{ periodo:"30", predio:"todos", origem:"todos" },
+  _dash:null,
   user:null,
   loginError:"",
   loggingIn:false,
@@ -537,6 +579,51 @@ function toast(msg){
 }
 
 const DUP_BLOCK_DIAS = 30;
+
+/* SLA: prazo (em dias) para abrir a OS no Hexagon, contado desde a criação do chamado */
+const SLA_DIAS = 3;
+const FINAL_RETENCAO_DIAS = 30;   // chamados finalizados no Hexagon podem ser excluídos depois disso
+function isAdminUser(){
+  return TEST_MODE || !!(state.user && ADMIN_UIDS.includes(state.user.uid));
+}
+function fmtDur(ms){
+  const totalMin = Math.max(0, Math.floor(ms/60000));
+  const d = Math.floor(totalMin/1440), h = Math.floor((totalMin%1440)/60), m = totalMin%60;
+  if(d>0) return d+"d "+h+"h";
+  if(h>0) return h+"h "+m+"min";
+  return m+"min";
+}
+function slaInfo(t){
+  const limit = SLA_DIAS*24*3600*1000;
+  const start = new Date(t.createdAt).getTime();
+  if(t.status==='resolvido'){
+    const end = t.resolvidoEm ? new Date(t.resolvidoEm).getTime() : Date.now();
+    const used = end - start;
+    const ok = used <= limit;
+    return { done:true, level: ok?'ok':'late', label: ok ? "OS dentro do prazo" : "OS fora do prazo (+"+fmtDur(used-limit)+")", remaining: limit-used };
+  }
+  const used = Date.now() - start;
+  const remaining = limit - used;
+  const level = used>=limit ? 'late' : (used/limit>=0.5 ? 'warn' : 'ok');
+  const label = remaining>=0 ? "SLA: restam "+fmtDur(remaining) : "SLA estourado há "+fmtDur(-remaining);
+  return { done:false, level, label, remaining };
+}
+function capFirst(s){ return s ? s.charAt(0).toUpperCase() + s.slice(1) : s; }
+function fmtDay(iso){
+  try{ return new Date(iso).toLocaleDateString('pt-BR',{day:'2-digit',month:'2-digit',year:'numeric'}); }catch(e){ return iso; }
+}
+function canFinalize(t){
+  if(TEST_MODE) return true;
+  if(!state.user) return false;
+  return t.reporterUid === state.user.uid || ADMIN_UIDS.includes(state.user.uid);
+}
+
+/* Só esses logins (identificados pelo UID, não pelo e-mail) podem excluir chamados já resolvidos (com OS) */
+const ADMIN_UIDS = ["WXj9ox8SdLZjurOf02OPnVQ8xFz1"];
+function canDeleteTicket(t){
+  if(TEST_MODE) return true;
+  return !!(state.user && ADMIN_UIDS.includes(state.user.uid) && t.status==='resolvido' && t.osNumero);
+}
 
 function categoriaKey(categoria, outroResumo){
   if(categoria !== 'Outro') return categoria;
@@ -609,7 +696,7 @@ function render(){
     bindLoginEvents();
     return;
   }
-  app.innerHTML = renderHeader() + renderToolbar() + renderBanner() + renderBody() + renderFab();
+  app.innerHTML = renderHeader() + renderViewTabs() + (state.view==='dash' ? renderDashboard() : (renderToolbar() + renderBanner() + renderBody() + renderFab()));
   if(state.showNewModal) app.insertAdjacentHTML('beforeend', renderNewModal());
   if(state.detailId) app.insertAdjacentHTML('beforeend', renderDetailModal());
   bindEvents();
@@ -706,7 +793,9 @@ function renderBanner(){
 }
 
 function renderToolbar(){
-  const chips = [["ativos","Ativos"],["resolvidos","Resolvidos"],["todos","Todos"]];
+  const colabAtivos = state.list.filter(t=>t.origem==='qrcode' && t.status!=='resolvido');
+  const colabLate = colabAtivos.filter(t=>slaInfo(t).level==='late').length;
+  const chips = [["ativos","Ativos"],["colab","Colaboradores" + (colabAtivos.length ? " ("+colabAtivos.length+")" : "")],["resolvidos","Resolvidos"],["todos","Todos"]];
   return `
   <div class="toolbar">
     <div class="searchWrap">
@@ -714,22 +803,42 @@ function renderToolbar(){
       <input type="text" id="searchInput" placeholder="${state.filter==='resolvidos' ? 'Buscar por nº da OS, sala ou descrição' : 'Buscar por local, categoria ou descrição'}" value="${escapeHtml(state.search)}">
     </div>
     <div class="chips">
-      ${chips.map(([v,l])=>`<button class="chip ${state.filter===v?'active':''}" data-filter="${v}">${l}</button>`).join("")}
+      ${chips.map(([v,l])=>`<button class="chip ${state.filter===v?'active':''}" data-filter="${v}">${l}${(v==='colab' && colabLate) ? ' <span style="color:#FF7A66;">●</span>' : ''}</button>`).join("")}
     </div>
     <button class="iconBtn" id="btnExportCsv" title="Exportar tudo em CSV">${ICON.download}</button>
+    ${isAdminUser() ? `<button class="iconBtn" id="btnCleanup" title="Limpar finalizados há mais de ${FINAL_RETENCAO_DIAS} dias (baixa um backup antes)">${ICON.trash}</button>` : ""}
   </div>`;
 }
 
 function visibleList(){
   let list = state.list.slice();
-  if(state.filter==="ativos") list = list.filter(t=>t.status!=='resolvido');
+  if(state.filter==="ativos") list = list.filter(t=>t.status!=='resolvido' && t.origem!=='qrcode');
+  if(state.filter==="colab") list = list.filter(t=>t.origem==='qrcode' && t.status!=='resolvido');
   if(state.filter==="resolvidos") list = list.filter(t=>t.status==='resolvido');
   const q = normalize(state.search);
   if(q){
     list = list.filter(t => normalize([ticketLocLabel(t), ticketBreadcrumb(t), categoriaLabel(t), t.descricao, t.reporter, t.osNumero||""].join(" ")).includes(q));
   }
-  list.sort((a,b)=> new Date(b.createdAt) - new Date(a.createdAt));
+  if(state.filter==="ativos" || state.filter==="colab"){
+    list.sort((a,b)=> slaInfo(a).remaining - slaInfo(b).remaining); // mais urgente primeiro
+  }else if(state.filter==="resolvidos"){
+    list.sort((a,b)=> new Date(b.resolvidoEm||b.updatedAt||b.createdAt) - new Date(a.resolvidoEm||a.updatedAt||a.createdAt));
+  }else{
+    list.sort((a,b)=> new Date(b.createdAt) - new Date(a.createdAt));
+  }
   return list;
+}
+
+function renderGroupItems(items){
+  if(state.filter!=="resolvidos") return `<div class="grid">${items.map(renderCard).join("")}</div>`;
+  const days = [];
+  items.forEach(t=>{
+    const key = fmtDay(t.resolvidoEm||t.updatedAt||t.createdAt);
+    let g = days[days.length-1];
+    if(!g || g.key!==key){ g = {key, items:[]}; days.push(g); }
+    g.items.push(t);
+  });
+  return days.map(g=>`<div class="dayHead">${g.key}</div><div class="grid">${g.items.map(renderCard).join("")}</div>`).join("");
 }
 
 function renderBody(){
@@ -743,7 +852,18 @@ function renderBody(){
       : "Nada por aqui com esse filtro ou busca.";
     return `<div class="empty"><div class="disp">Tudo limpo</div><p>${msg}</p></div>`;
   }
-  return `<div class="grid">${list.map(renderCard).join("")}</div>`;
+  const groups = {};
+  list.forEach(t=>{ const k = t.predioId || "?"; (groups[k] = groups[k] || []).push(t); });
+  const order = PREDIOS.map(p=>p.id).concat(Object.keys(groups).filter(k=>!PREDIOS.some(p=>p.id===k)));
+  let first = true;
+  return order.filter(k=>groups[k]).map(k=>{
+    const p = getPredio(k);
+    const items = groups[k];
+    const late = items.filter(t=>t.status!=='resolvido' && slaInfo(t).level==='late').length;
+    const head = `<div class="groupHead ${first?'first':''}"><span class="gTitle">${escapeHtml(p ? predioLabel(p) : "Sem prédio")}</span><span class="gCount">${items.length} chamado${items.length>1?'s':''}</span>${late?`<span class="gLate">${late} fora do prazo</span>`:""}</div>`;
+    first = false;
+    return head + renderGroupItems(items);
+  }).join("");
 }
 
 function renderCard(t){
@@ -751,22 +871,25 @@ function renderCard(t){
   const thumbHtml = t.thumb
     ? `<img class="thumb" src="${t.thumb}" alt="">`
     : `<div class="thumbPlaceholder">${ICON.image}</div>`;
+  const sla = slaInfo(t);
   return `
-  <div class="card ${t.status==='resolvido'?'resolvedCard':''}">
+  <div class="card ${t.status==='resolvido'?'resolvedCard':''} ${t.finalizado?'finalCard':''} ${(!sla.done && sla.level==='late')?'slaLate':''}">
     <button class="cardBtn" data-open="${t.id}">
+      ${t.finalizado ? `<div class="finalBand">${ICON.check} Resolvido no Hexagon</div>` : ""}
       ${thumbHtml}
       <div class="cardBody">
         <div class="cardTop">
           <span class="loc">${escapeHtml(ticketLocLabel(t))}</span>
           <span class="badge ${t.status}">${STATUS_LABEL[t.status]}</span>
         </div>
-        <div class="cat">${escapeHtml(ticketBreadcrumb(t))} · ${escapeHtml(categoriaLabel(t))}</div>
+        <div class="cat">${t.origem==='qrcode' ? '<span class="qrTag">Colaborador</span> ' : ''}${escapeHtml(ticketBreadcrumb(t))} · ${escapeHtml(categoriaLabel(t))}</div>
         <div class="desc">${escapeHtml(t.descricao)}</div>
         <div class="cardFoot">
-          <span>${escapeHtml(t.reporter)} · ${fmtDate(t.createdAt)}</span>
+          <span>${escapeHtml(t.reporter)}${t.reporterPilar ? ' · ' + escapeHtml(t.reporterPilar) : ''} · ${fmtDate(t.createdAt)}</span>
           ${confirmCount>0 ? `<span class="confirmTag">${ICON.alert} ${confirmCount}</span>` : ""}
         </div>
         ${t.status==='resolvido' && t.osNumero ? `<div class="osBadge">${ICON.check} OS ${escapeHtml(t.osNumero)} · ${fmtDate(t.resolvidoEm)}</div>` : ""}
+        <div><span class="slaChip ${sla.level}${state.filter==='colab' ? ' big' : ''}">${sla.label}</span></div>
       </div>
     </button>
   </div>`;
@@ -939,12 +1062,14 @@ function renderDetailModal(){
         <button class="iconBtn" id="btnCloseDetail">${ICON.close}</button>
       </div>
       <div class="sheetBody">
+        ${t.finalizado ? `<div class="finalBand detail">${ICON.check} Resolvido no Hexagon · finalizado por ${escapeHtml(t.finalizadoPor||"—")} em ${fmtDate(t.finalizadoEm)}</div>` : ""}
         ${photos.length ? `<div class="gallery">${photos.map(p=>`<img src="${p}" alt="">`).join("")}</div>` : ""}
 
         ${t.status==='resolvido' && t.osNumero ? `
         <div class="osCallout">
           <div><div class="k">Nº da OS</div><div class="v">${escapeHtml(t.osNumero)}</div></div>
-          <div><div class="k">Finalizado em</div><div class="v" style="font-size:15px;">${fmtDate(t.resolvidoEm)}</div></div>
+          <div><div class="k">OS aberta em</div><div class="v" style="font-size:15px;">${fmtDate(t.resolvidoEm)}</div></div>
+          ${t.osAbertaPor ? `<div><div class="k">OS aberta por</div><div class="v" style="font-size:15px;">${escapeHtml(t.osAbertaPor)}</div></div>` : ""}
           ${t.patrimonio ? `<div><div class="k">Patrimônio</div><div class="v" style="font-size:15px;">${escapeHtml(t.patrimonio)}</div></div>` : ""}
           ${t.liberado ? `<div><div class="k">Liberado</div><div class="v" style="font-size:13px;">por ${escapeHtml(t.liberadoPor||"")} em ${fmtDate(t.liberadoEm)}</div></div>` : ""}
         </div>
@@ -957,6 +1082,8 @@ function renderDetailModal(){
           <div><div class="k">Status</div><div class="v"><span class="badge ${t.status}">${STATUS_LABEL[t.status]}</span></div></div>
           <div><div class="k">Relatado por</div><div class="v">${escapeHtml(t.reporter)}</div></div>
           <div><div class="k">Data</div><div class="v">${fmtDate(t.createdAt)}</div></div>
+          ${t.origem==='qrcode' ? `<div><div class="k">Origem</div><div class="v">Colaborador (QR code)</div></div><div><div class="k">Pilar</div><div class="v">${escapeHtml(t.reporterPilar||"—")}</div></div>` : ""}
+          <div><div class="k">Prazo (SLA ${SLA_DIAS} dias)</div><div class="v"><span class="slaChip ${slaInfo(t).level}" style="margin-top:0;">${slaInfo(t).label}</span></div></div>
           ${t.patrimonio && t.status!=='resolvido' ? `<div><div class="k">Patrimônio</div><div class="v">${escapeHtml(t.patrimonio)}</div></div>` : ""}
         </div>
 
@@ -991,9 +1118,11 @@ function renderDetailModal(){
         <div class="actionRow">
           ${t.status==='aberto' ? `<button class="btn" data-setstatus="andamento">Marcar em andamento</button><button class="btn" id="btnStartResolve">Marcar resolvido</button>` : ""}
           ${t.status==='andamento' ? `<button class="btn" id="btnStartResolve">Marcar resolvido</button><button class="btn ghost" data-setstatus="aberto">Reabrir</button>` : ""}
-          ${t.status==='resolvido' ? `<button class="btn ghost" data-setstatus="aberto">Reabrir</button>` : ""}
+          ${t.status==='resolvido' && t.osNumero && !t.finalizado && canFinalize(t) ? `<button class="btn primary" id="btnFinalizeTicket">${ICON.check} Finalizar — encerrado no Hexagon</button>` : ""}
+          ${t.status==='resolvido' && !t.finalizado ? `<button class="btn ghost" data-setstatus="aberto">Reabrir</button>` : ""}
           ${t.status==='resolvido' && t.osNumero && !t.liberado ? `<button class="btn" id="btnLiberarChamado">${ICON.check} Problema tratado — liberar</button>` : ""}
           ${t.status!=='resolvido' && canEditTicket(t) ? `<button class="btn ghost" id="btnEditTicket">Editar chamado</button>` : ""}
+          ${canDeleteTicket(t) ? `<button class="btn ghost" id="btnDeleteTicket" style="color:var(--alert);border-color:var(--alert);">${ICON.close} Excluir chamado</button>` : ""}
         </div>`}
         <div class="actionRow">
           <button class="btn ghost" id="btnCopyFields">${ICON.copy} Copiar campos</button>
@@ -1017,11 +1146,15 @@ function ticketFieldsText(t){
     "STATUS: " + STATUS_LABEL[t.status],
     "CONFIRMAÇÕES: " + ((t.confirmations||[]).length) + " pessoa(s) relataram o mesmo problema"
   ];
+  if(t.origem==='qrcode') lines.push("ORIGEM: Colaborador (QR code) — Pilar " + (t.reporterPilar||"—"));
   if(t.patrimonio) lines.push("PATRIMÔNIO: " + t.patrimonio);
   if(t.status==='resolvido' && t.osNumero){
     lines.push("Nº DA OS: " + t.osNumero);
-    lines.push("FINALIZADO EM: " + fmtDate(t.resolvidoEm));
+    lines.push("OS ABERTA EM: " + fmtDate(t.resolvidoEm));
+    if(t.osAbertaPor) lines.push("OS ABERTA POR: " + t.osAbertaPor);
+    lines.push("PRAZO: " + slaInfo(t).label);
   }
+  if(t.finalizado) lines.push("RESOLVIDO NO HEXAGON EM: " + fmtDate(t.finalizadoEm) + " (por " + (t.finalizadoPor||"—") + ")");
   return lines.join("\n");
 }
 function downloadText(filename, text){
@@ -1037,15 +1170,15 @@ function csvEscape(v){
   if(/[",\n]/.test(s)) return '"' + s.replace(/"/g,'""') + '"';
   return s;
 }
-function exportAllCsv(){
+function exportAllCsv(listArg, prefix){
   const header = [
     "ID","Predio","Andar","Codigo Sala","Sala","Categoria","Descricao","Status",
     "Relatado por","Criado em","Atualizado em",
     "Qtd Confirmacoes","Detalhe Confirmacoes",
-    "No OS","Finalizado em",
-    "Liberado","Liberado por","Liberado em"
+    "No OS","OS aberta em","OS aberta por","Prazo da OS","Finalizado no Hexagon","Finalizado por","Finalizado em",
+    "Liberado","Liberado por","Liberado em","Origem","Pilar do solicitante"
   ];
-  const rows = state.list.map(t => {
+  const rows = (listArg || state.list).map(t => {
     const confDetalhe = (t.confirmations||[])
       .map(c => `${c.name} (${fmtDate(c.date)}${c.note?" - "+c.note:""})`)
       .join(" ; ");
@@ -1054,13 +1187,15 @@ function exportAllCsv(){
       categoriaLabel(t), t.descricao, STATUS_LABEL[t.status],
       t.reporter, fmtDate(t.createdAt), t.updatedAt?fmtDate(t.updatedAt):"",
       (t.confirmations||[]).length, confDetalhe,
-      t.osNumero||"", t.resolvidoEm?fmtDate(t.resolvidoEm):"",
-      t.liberado?"Sim":"Não", t.liberadoPor||"", t.liberadoEm?fmtDate(t.liberadoEm):""
+      t.osNumero||"", t.resolvidoEm?fmtDate(t.resolvidoEm):"", t.osAbertaPor||"", t.status==='resolvido'?slaInfo(t).label:"",
+      t.finalizado?"Sim":"Não", t.finalizadoPor||"", t.finalizadoEm?fmtDate(t.finalizadoEm):"",
+      t.liberado?"Sim":"Não", t.liberadoPor||"", t.liberadoEm?fmtDate(t.liberadoEm):"",
+      t.origem==='qrcode' ? "Colaborador (QR)" : "Equipe", t.reporterPilar||""
     ];
   });
   const csv = [header, ...rows].map(r => r.map(csvEscape).join(",")).join("\n");
   // BOM no início: sem isso o Excel lê os acentos errado (Térreo vira TÃ©rreo)
-  downloadText("ronda-export-" + new Date().toISOString().slice(0,10) + ".csv", "\uFEFF" + csv);
+  downloadText((prefix || "ronda-export") + "-" + new Date().toISOString().slice(0,10) + ".csv", "\uFEFF" + csv);
 }
 
 /* ---------------- ACTIONS (Firestore, tempo real) ---------------- */
@@ -1110,7 +1245,7 @@ function openDetail(id){
 
 async function setStatus(id, status){
   // usado para "andamento" e "aberto" (reabrir); zera a OS, já que ela só vale para uma conclusão específica
-  const payload = { status, osNumero: null, resolvidoEm: null, liberado: null, liberadoPor: null, liberadoEm: null, updatedAt: new Date().toISOString() };
+  const payload = { status, osNumero: null, resolvidoEm: null, osAbertaPor: null, osAbertaPorUid: null, finalizado: null, finalizadoEm: null, finalizadoPor: null, finalizadoPorUid: null, liberado: null, liberadoPor: null, liberadoEm: null, updatedAt: new Date().toISOString() };
   if(TEST_MODE){
     const list = testGetAll();
     const t = list.find(x=>x.id===id);
@@ -1131,6 +1266,9 @@ async function setStatusResolved(id, osNumero, patrimonio){
   const now = new Date().toISOString();
   const payload = { status:"resolvido", osNumero, resolvidoEm: now, updatedAt: now };
   if(patrimonio) payload.patrimonio = patrimonio;
+  // quem abriu a OS no Hexagon fica salvo automaticamente, pelo login
+  payload.osAbertaPor = state.reporterName || null;
+  payload.osAbertaPorUid = (!TEST_MODE && state.user) ? state.user.uid : null;
   if(TEST_MODE){
     const list = testGetAll();
     const t = list.find(x=>x.id===id);
@@ -1144,6 +1282,72 @@ async function setStatusResolved(id, osNumero, patrimonio){
   }catch(e){
     console.error(e);
     toast(e.message==="timeout" ? "O Firebase demorou demais para responder. Confira sua conexão." : "Não foi possível concluir o chamado agora.");
+  }
+}
+
+async function cleanupFinalizados(){
+  if(!isAdminUser()) return;
+  const limit = FINAL_RETENCAO_DIAS*24*3600*1000;
+  const old = state.list.filter(t => t.finalizado && t.finalizadoEm && (Date.now() - new Date(t.finalizadoEm).getTime()) > limit);
+  if(old.length===0){ toast("Nenhum chamado finalizado há mais de " + FINAL_RETENCAO_DIAS + " dias."); return; }
+  if(!confirm(old.length + " chamado(s) finalizado(s) no Hexagon há mais de " + FINAL_RETENCAO_DIAS + " dias serão excluídos para sempre. Antes disso, um CSV de backup será baixado. Continuar?")) return;
+  exportAllCsv(old, "ronda-backup-finalizados");
+  try{
+    if(TEST_MODE){
+      const ids = new Set(old.map(t=>t.id));
+      testSaveAll(testGetAll().filter(x=>!ids.has(x.id))); testNotify();
+    }else{
+      await Promise.all(old.map(t => withTimeout(deleteDoc(doc(db, "chamados", t.id)), 20000)));
+    }
+    toast(old.length + " chamado(s) excluído(s). O backup foi baixado.");
+  }catch(e){
+    console.error(e);
+    toast("Não foi possível excluir tudo agora. O backup já foi baixado; tente de novo.");
+  }
+}
+
+async function finalizeTicket(id){
+  const t = state.list.find(x=>x.id===id);
+  if(!t || !canFinalize(t)) return;
+  if(!confirm("Confirmar que esse chamado já foi atendido e encerrado no Hexagon? Depois disso ele fica finalizado (em cinza).")) return;
+  const now = new Date().toISOString();
+  const payload = { finalizado:true, finalizadoEm: now, finalizadoPor: state.reporterName || null,
+                    finalizadoPorUid: (!TEST_MODE && state.user) ? state.user.uid : null, updatedAt: now };
+  if(TEST_MODE){
+    const list = testGetAll();
+    const x = list.find(y=>y.id===id);
+    if(x) Object.assign(x, payload);
+    testSaveAll(list); testNotify();
+    toast("Chamado finalizado.");
+    return;
+  }
+  try{
+    await withTimeout(updateDoc(doc(db, "chamados", id), payload), 15000);
+    toast("Chamado finalizado.");
+  }catch(e){
+    console.error(e);
+    toast(e.message==="timeout" ? "O Firebase demorou demais para responder." : "Não foi possível finalizar agora.");
+  }
+}
+
+async function deleteTicket(id){
+  const t = state.list.find(x=>x.id===id);
+  if(!t || !canDeleteTicket(t)) return;
+  if(!confirm("Excluir esse chamado (OS " + (t.osNumero||"—") + ") para sempre? Essa ação não pode ser desfeita.")) return;
+  if(TEST_MODE){
+    const list = testGetAll().filter(x=>x.id!==id);
+    testSaveAll(list); testNotify();
+    toast("Chamado excluído.");
+    closeDetailModal();
+    return;
+  }
+  try{
+    await withTimeout(deleteDoc(doc(db, "chamados", id)), 15000);
+    toast("Chamado excluído.");
+    closeDetailModal();
+  }catch(e){
+    console.error(e);
+    toast(e.message==="timeout" ? "O Firebase demorou demais para responder." : "Não foi possível excluir agora.");
   }
 }
 
@@ -1207,7 +1411,7 @@ async function submitNewTicket(){
   const f = state.newForm;
   const categoria = document.getElementById('fCategoria').value;
   const outroResumoEl = document.getElementById('fOutroResumo');
-  const outroResumoVal = outroResumoEl ? outroResumoEl.value.trim() : "";
+  const outroResumoVal = capFirst(outroResumoEl ? outroResumoEl.value.trim() : "");
   if(categoria === 'Outro' && !outroResumoVal){
     toast("Resuma rapidamente o tipo de problema (campo abaixo de Categoria).");
     if(outroResumoEl) outroResumoEl.focus();
@@ -1223,7 +1427,7 @@ async function submitNewTicket(){
     return;
   }
 
-  const descricao = document.getElementById('fDescricao').value.trim();
+  const descricao = capFirst(document.getElementById('fDescricao').value.trim());
   const patrimonioEl = document.getElementById('fPatrimonio');
   const patrimonioVal = patrimonioEl ? patrimonioEl.value.trim() : "";
   if(categoria === 'Mobiliário' && !patrimonioVal){
@@ -1240,7 +1444,7 @@ async function submitNewTicket(){
     toast("Selecione a sala, ou escolha \"Outro\" para digitar o local.");
     return;
   }
-  const salaManualVal = f.isManual ? document.getElementById('fSalaManual').value.trim() : "";
+  const salaManualVal = f.isManual ? capFirst(document.getElementById('fSalaManual').value.trim()) : "";
   if(f.isManual && !salaManualVal){
     toast("Descreva o local, já que a sala não está na lista.");
     return;
@@ -1308,6 +1512,7 @@ async function submitNewTicket(){
         status:"aberto",
         reporter: state.reporterName,
         reporterUid: (!TEST_MODE && state.user) ? state.user.uid : null,
+        origem: 'equipe',
         createdAt: now,
         confirmations: [],
         osNumero: null,
@@ -1351,6 +1556,22 @@ function bindEvents(){
   document.querySelectorAll('[data-filter]').forEach(el=>{
     el.onclick = () => { state.filter = el.getAttribute('data-filter'); render(); };
   });
+
+  document.querySelectorAll('[data-view]').forEach(el=>{
+    el.onclick = () => { state.view = el.getAttribute('data-view'); render(); };
+  });
+  [['dPeriodo','periodo'],['dPredio','predio'],['dOrigem','origem']].forEach(([id,key])=>{
+    const el = $(id);
+    if(el) el.onchange = e => { state.dash[key] = e.target.value; render(); };
+  });
+  const pptxBtn = $('btnPptx');
+  if(pptxBtn) pptxBtn.onclick = () => exportPptx();
+  document.querySelectorAll('[data-png]').forEach(el=>{
+    el.onclick = () => downloadChartPng(el.getAttribute('data-png'));
+  });
+
+  const cleanupBtn = $('btnCleanup');
+  if(cleanupBtn) cleanupBtn.onclick = () => cleanupFinalizados();
 
   const exportBtn = $('btnExportCsv');
   if(exportBtn) exportBtn.onclick = () => exportAllCsv();
@@ -1478,6 +1699,12 @@ function bindEvents(){
   const liberarBtn = $('btnLiberarChamado');
   if(liberarBtn) liberarBtn.onclick = () => liberarChamado(state.detailId);
 
+  const finalizeBtn = $('btnFinalizeTicket');
+  if(finalizeBtn) finalizeBtn.onclick = () => finalizeTicket(state.detailId);
+
+  const deleteBtn = $('btnDeleteTicket');
+  if(deleteBtn) deleteBtn.onclick = () => deleteTicket(state.detailId);
+
   const startResolveBtn = $('btnStartResolve');
   if(startResolveBtn) startResolveBtn.onclick = () => { state.resolvingTicket = true; render(); };
   const cancelResolveBtn = $('btnCancelResolve');
@@ -1562,6 +1789,374 @@ function debounce(fn, ms){
   return function(...args){ clearTimeout(t); t = setTimeout(()=>fn.apply(this,args), ms); };
 }
 
+/* ---------------- DASHBOARD: partes puras (gráficos SVG e apresentação) ---------------- */
+const DC = { accent:'#1737E3', ok:'#2E6B4C', alert:'#AE3626', warn:'#C98A00', ink:'#14161A', soft:'#5B5E66', grid:'#D5D8DE', mute:'#8A8D94' };
+function dEsc(s){ return String(s==null?'':s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
+function dTrunc(s,n){ s = String(s); return s.length>n ? s.slice(0,n-1)+'…' : s; }
+function dSvg(w,h,inner){
+  return `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${w} ${h}" width="${w}" height="${h}" font-family="Onest, Arial, Helvetica, sans-serif"><rect width="${w}" height="${h}" fill="#FFFFFF"/>${inner}</svg>`;
+}
+function dEmpty(w,h,msg){
+  return dSvg(w,h,`<text x="${w/2}" y="${h/2}" text-anchor="middle" font-size="14" fill="${DC.mute}">${dEsc(msg||'Sem dados no período')}</text>`);
+}
+
+/* barras horizontais (ranking) */
+function dBarsH(items, o){
+  o = o || {};
+  const w = o.w || 640, rowH = o.rowH || 30, max = o.max || 10, color = o.color || DC.accent;
+  items = (items||[]).slice(0, max);
+  if(!items.length) return dEmpty(w, 120);
+  const pad = 16, labelW = 200, valW = 40;
+  const h = pad*2 + items.length*rowH;
+  const maxV = Math.max.apply(null, items.map(i=>i.value));
+  const barMax = w - labelW - valW - pad*2;
+  let g = '';
+  items.forEach((it,i)=>{
+    const y = pad + i*rowH;
+    const bw = Math.max(3, it.value/maxV*barMax);
+    g += `<text x="${pad+labelW-8}" y="${y+rowH/2+4}" text-anchor="end" font-size="12.5" fill="${DC.ink}">${dEsc(dTrunc(it.label,26))}</text>`;
+    g += `<rect x="${pad+labelW}" y="${y+5}" width="${bw.toFixed(1)}" height="${rowH-10}" rx="2" fill="${color}"><title>${dEsc(it.label)}: ${it.value}</title></rect>`;
+    g += `<text x="${(pad+labelW+bw+6).toFixed(1)}" y="${y+rowH/2+4}" font-size="12.5" font-weight="700" fill="${DC.ink}">${it.value}</text>`;
+  });
+  return dSvg(w,h,g);
+}
+
+/* colunas (evolução no tempo) */
+function dColumns(items, o){
+  o = o || {};
+  const w = o.w || 640, h = o.h || 260, color = o.color || DC.accent;
+  if(!items || !items.length) return dEmpty(w, 140);
+  const padL = 36, padR = 12, padT = 16, padB = 36;
+  const maxV = Math.max(1, Math.max.apply(null, items.map(i=>i.value)));
+  const step = Math.ceil(maxV/4), niceMax = step*4;
+  const plotW = w-padL-padR, plotH = h-padT-padB;
+  const bw = plotW/items.length;
+  let g = '';
+  for(let k=0;k<=4;k++){
+    const v = step*k, y = padT + plotH - (v/niceMax)*plotH;
+    g += `<line x1="${padL}" y1="${y.toFixed(1)}" x2="${w-padR}" y2="${y.toFixed(1)}" stroke="${DC.grid}" stroke-width="1"/>`;
+    g += `<text x="${padL-6}" y="${(y+4).toFixed(1)}" text-anchor="end" font-size="11" fill="${DC.soft}">${v}</text>`;
+  }
+  const every = Math.ceil(items.length/10);
+  items.forEach((it,i)=>{
+    const bh = (it.value/niceMax)*plotH;
+    const x = padL + i*bw + bw*0.15, y = padT + plotH - bh;
+    if(it.value>0) g += `<rect x="${x.toFixed(1)}" y="${y.toFixed(1)}" width="${(bw*0.7).toFixed(1)}" height="${bh.toFixed(1)}" rx="1.5" fill="${color}"><title>${dEsc(it.label)}: ${it.value}</title></rect>`;
+    if(i%every===0) g += `<text x="${(padL+i*bw+bw/2).toFixed(1)}" y="${h-padB+16}" text-anchor="middle" font-size="11" fill="${DC.soft}">${dEsc(it.label)}</text>`;
+  });
+  return dSvg(w,h,g);
+}
+
+/* rosca (no prazo x fora do prazo) */
+function dDonut(parts, centerTop, centerSub, o){
+  o = o || {};
+  const w = o.w || 640, h = o.h || 250;
+  const total = (parts||[]).reduce((a,p)=>a+p.value,0);
+  if(!total) return dEmpty(w, 160);
+  const cx = 130, cy = h/2, rm = 74, sw = 30, circ = 2*Math.PI*rm;
+  let g = `<circle cx="${cx}" cy="${cy}" r="${rm}" fill="none" stroke="${DC.grid}" stroke-width="${sw}"/>`;
+  let acc = 0;
+  parts.forEach(p=>{
+    if(p.value<=0) return;
+    const len = p.value/total*circ;
+    g += `<circle cx="${cx}" cy="${cy}" r="${rm}" fill="none" stroke="${p.color}" stroke-width="${sw}" stroke-dasharray="${len.toFixed(2)} ${(circ-len).toFixed(2)}" stroke-dashoffset="${(-acc).toFixed(2)}" transform="rotate(-90 ${cx} ${cy})"><title>${dEsc(p.label)}: ${p.value}</title></circle>`;
+    acc += len;
+  });
+  g += `<text x="${cx}" y="${cy+6}" text-anchor="middle" font-size="26" font-weight="700" fill="${DC.ink}">${dEsc(centerTop)}</text>`;
+  g += `<text x="${cx}" y="${cy+26}" text-anchor="middle" font-size="12" fill="${DC.soft}">${dEsc(centerSub)}</text>`;
+  parts.forEach((p,i)=>{
+    const y = cy - (parts.length*34)/2 + i*34 + 12;
+    const pct = Math.round(p.value/total*100);
+    g += `<rect x="250" y="${y-11}" width="14" height="14" rx="2" fill="${p.color}"/>`;
+    g += `<text x="272" y="${y}" font-size="14" fill="${DC.ink}">${dEsc(p.label)}</text>`;
+    g += `<text x="272" y="${y+16}" font-size="12.5" fill="${DC.soft}"><tspan font-weight="700" fill="${DC.ink}">${p.value}</tspan> chamado${p.value===1?'':'s'} · ${pct}%</text>`;
+  });
+  return dSvg(w,h,g);
+}
+
+/* agrupa datas em dia / semana / mês, conforme o tamanho do período */
+function dBuckets(times, startMs, endMs){
+  const pad = n => String(n).padStart(2,'0');
+  const ymd = d => d.getFullYear()+'-'+pad(d.getMonth()+1)+'-'+pad(d.getDate());
+  const mondayOf = d => { const x = new Date(d.getFullYear(), d.getMonth(), d.getDate()); const wd = (x.getDay()+6)%7; x.setDate(x.getDate()-wd); return x; };
+  const span = Math.max(1, Math.ceil((endMs-startMs)/86400000));
+  const unit = span<=31 ? 'day' : (span<=140 ? 'week' : 'month');
+  const keyOf = d => unit==='day' ? ymd(d) : (unit==='week' ? ymd(mondayOf(d)) : d.getFullYear()+'-'+pad(d.getMonth()+1));
+  const labelOf = d => unit==='month' ? pad(d.getMonth()+1)+'/'+String(d.getFullYear()).slice(2) : pad(d.getDate())+'/'+pad(d.getMonth()+1);
+  const first = new Date(startMs);
+  let cur = unit==='day' ? new Date(first.getFullYear(), first.getMonth(), first.getDate())
+          : unit==='week' ? mondayOf(first)
+          : new Date(first.getFullYear(), first.getMonth(), 1);
+  const end = new Date(endMs);
+  const items = [], idx = {};
+  let guard = 0;
+  while(cur <= end && guard++ < 400){
+    idx[keyOf(cur)] = items.length;
+    items.push({ label: labelOf(cur), value: 0 });
+    if(unit==='day') cur = new Date(cur.getFullYear(), cur.getMonth(), cur.getDate()+1);
+    else if(unit==='week') cur = new Date(cur.getFullYear(), cur.getMonth(), cur.getDate()+7);
+    else cur = new Date(cur.getFullYear(), cur.getMonth()+1, 1);
+  }
+  times.forEach(ms => { const k = keyOf(new Date(ms)); if(idx[k]!==undefined) items[idx[k]].value++; });
+  return { unit, items };
+}
+
+/* monta a apresentação (PowerPoint) com gráficos editáveis */
+function dBuildPptx(Pptx, D, info){
+  const p = new Pptx();
+  p.layout = 'LAYOUT_WIDE';            // 13,33 x 7,5 pol
+  p.title = 'RONDA — Painel de chamados';
+  const F = 'Arial';
+  const title = (s, text, sub) => {
+    s.addShape(p.ShapeType.rect, { x:0, y:0, w:13.33, h:0.18, fill:{ color:'1737E3' }, line:{ color:'1737E3' } });
+    s.addText(text, { x:0.5, y:0.35, w:12.3, h:0.7, fontSize:28, bold:true, color:'14161A', fontFace:F });
+    if(sub) s.addText(sub, { x:0.5, y:1.0, w:12.3, h:0.4, fontSize:14, color:'5B5E66', fontFace:F });
+  };
+  const empty = s => s.addText('Sem dados no período selecionado.', { x:0.5, y:3.2, w:12.3, h:1, fontSize:20, color:'8A8D94', align:'center', fontFace:F });
+  const filtros = `${info.periodo} · ${info.predio} · ${info.origem}`;
+
+  // 1) capa
+  let s = p.addSlide(); s.background = { color:'1737E3' };
+  s.addText('RONDA', { x:0.7, y:2.2, w:12, h:1.1, fontSize:60, bold:true, color:'FFFFFF', fontFace:F });
+  s.addText('Painel de chamados', { x:0.7, y:3.3, w:12, h:0.7, fontSize:28, color:'FFFFFF', fontFace:F });
+  s.addText(filtros, { x:0.7, y:4.1, w:12, h:0.5, fontSize:16, color:'DDE3FF', fontFace:F });
+  s.addText('Gerado em ' + info.geradoEm, { x:0.7, y:4.6, w:12, h:0.5, fontSize:14, color:'DDE3FF', fontFace:F });
+
+  // 2) indicadores
+  s = p.addSlide(); title(s, 'Resumo', filtros);
+  const kp = [
+    ['Chamados abertos', String(D.total), '1737E3'],
+    ['Ativos agora', String(D.ativos), '14161A'],
+    ['No prazo', D.pctNoPrazo + '%', '2E6B4C'],
+    ['Fora do prazo', String(D.foraPrazo), D.foraPrazo>0 ? 'AE3626' : '14161A'],
+    ['Tempo médio até abrir a OS', D.avgLabel, '14161A'],
+    ['Finalizados no Hexagon', String(D.finalizados), '14161A']
+  ];
+  kp.forEach((k,i)=>{
+    const col = i%3, row = Math.floor(i/3);
+    const x = 0.6 + col*4.1, y = 1.8 + row*2.5;
+    s.addShape(p.ShapeType.rect, { x, y, w:3.8, h:2.2, fill:{ color:'F7F6F1' }, line:{ color:'C9CCD3', width:1 } });
+    s.addText(k[1], { x, y:y+0.3, w:3.8, h:1.1, fontSize:40, bold:true, color:k[2], align:'center', fontFace:F });
+    s.addText(k[0], { x, y:y+1.4, w:3.8, h:0.6, fontSize:15, color:'5B5E66', align:'center', fontFace:F });
+  });
+
+  // 3) prazo
+  s = p.addSlide(); title(s, 'Prazo para abrir a OS (SLA de ' + info.sla + ' dias)', filtros);
+  if(D.total>0){
+    s.addChart(p.charts.DOUGHNUT, [{ name:'Prazo', labels:['No prazo','Fora do prazo'], values:[D.noPrazo, D.foraPrazo] }],
+      { x:2.2, y:1.5, w:8.9, h:5.4, holeSize:58, chartColors:['2E6B4C','AE3626'], showLegend:true, legendPos:'r', legendFontSize:16,
+        showPercent:true, showValue:true, dataLabelColor:'FFFFFF', dataLabelFontSize:16, dataLabelFontBold:true });
+  } else empty(s);
+
+  // 4..) rankings e séries
+  const barSlide = (titulo, data, dir, color) => {
+    const sl = p.addSlide(); title(sl, titulo, filtros);
+    if(data && data.length){
+      sl.addChart(p.charts.BAR, [{ name:'Chamados', labels:data.map(d=>d.label), values:data.map(d=>d.value) }],
+        { x:0.6, y:1.5, w:12.1, h:5.5, barDir:dir, chartColors:[color], showValue:true, dataLabelFontSize:14, dataLabelColor:'14161A',
+          dataLabelFormatCode:'0;-0;;@', valAxisLabelFormatCode:'0', valAxisMajorUnit: (Math.max.apply(null, data.map(d=>d.value))<=10 ? 1 : undefined),
+          catAxisLabelFontSize:13, valAxisLabelFontSize:12, valGridLine:{ color:'E5E7EB', size:0.5 }, showLegend:false,
+          catAxisOrientation: dir==='bar' ? 'maxMin' : 'minMax', valAxisMinVal:0 });
+    } else empty(sl);
+  };
+  barSlide('Quem mais abriu chamados', D.topReporters, 'bar', '1737E3');
+  barSlide('Chamados por prédio', D.byPredio, 'bar', '1737E3');
+  barSlide('Chamados abertos por ' + (D.series.unit==='day'?'dia':(D.series.unit==='week'?'semana':'mês')), D.series.items, 'col', '1737E3');
+  barSlide('Chamados por categoria', D.byCategoria, 'bar', '1737E3');
+  if(D.byPilar && D.byPilar.length) barSlide('Chamados de colaboradores por pilar', D.byPilar, 'bar', '1737E3');
+
+  // última) fora do prazo
+  s = p.addSlide(); title(s, 'Chamados fora do prazo', filtros);
+  if(D.lateRows && D.lateRows.length){
+    const head = ['Local','Prédio','Quem abriu','Situação'].map(t=>({ text:t, options:{ bold:true, color:'FFFFFF', fill:{ color:'1737E3' }, fontFace:F, fontSize:12 } }));
+    const rows = [head].concat(D.lateRows.slice(0,14).map(r=>[r.sala, r.predio, r.quem, r.situacao].map(t=>({ text:String(t), options:{ fontFace:F, fontSize:11 } }))));
+    s.addTable(rows, { x:0.5, y:1.5, w:12.3, colW:[3.6,3.3,2.6,2.8], border:{ type:'solid', color:'C9CCD3', pt:0.5 }, valign:'middle' });
+    if(D.lateRows.length>14) s.addText('+ ' + (D.lateRows.length-14) + ' outros (veja a lista completa no app)', { x:0.5, y:6.9, w:12.3, h:0.4, fontSize:12, color:'5B5E66', fontFace:F });
+  } else {
+    s.addText('Nenhum chamado fora do prazo no período.', { x:0.5, y:3.2, w:12.3, h:1, fontSize:22, color:'2E6B4C', align:'center', bold:true, fontFace:F });
+  }
+  return p;
+}
+
+/* ---------------- DASHBOARD: tela e exportação ---------------- */
+const DASH_PERIODOS = [["7","Últimos 7 dias"],["30","Últimos 30 dias"],["90","Últimos 90 dias"],["365","Último ano"],["tudo","Todo o período"]];
+const DASH_ORIGENS = [["todos","Todas as origens"],["equipe","Equipe"],["qrcode","Colaboradores (QR code)"]];
+
+function dashLabels(){
+  const d = state.dash;
+  const per = (DASH_PERIODOS.find(x=>x[0]===d.periodo)||DASH_PERIODOS[1])[1];
+  const p = d.predio==='todos' ? null : getPredio(d.predio);
+  const ori = (DASH_ORIGENS.find(x=>x[0]===d.origem)||DASH_ORIGENS[0])[1];
+  return { periodo: per, predio: p ? p.nome : "Todos os prédios", origem: ori };
+}
+
+function dashCompute(){
+  const d = state.dash;
+  const now = Date.now();
+  const days = d.periodo==='tudo' ? null : parseInt(d.periodo,10);
+  const lim = days ? now - days*86400000 : 0;
+  const list = state.list.filter(t=>{
+    const ms = new Date(t.createdAt).getTime();
+    if(ms < lim) return false;
+    if(d.predio!=='todos' && t.predioId!==d.predio) return false;
+    if(d.origem==='equipe' && t.origem==='qrcode') return false;
+    if(d.origem==='qrcode' && t.origem!=='qrcode') return false;
+    return true;
+  });
+  const count = (arr, fn) => {
+    const m = {};
+    arr.forEach(t=>{ const k = fn(t); if(k) m[k] = (m[k]||0) + 1; });
+    return Object.entries(m).map(([label,value])=>({label,value})).sort((a,b)=> b.value-a.value || a.label.localeCompare(b.label));
+  };
+  const total = list.length;
+  const resolvidos = list.filter(t=>t.status==='resolvido');
+  const late = list.filter(t=>slaInfo(t).level==='late');
+  const noPrazo = total - late.length;
+  const tempos = resolvidos.filter(t=>t.resolvidoEm).map(t=> new Date(t.resolvidoEm) - new Date(t.createdAt));
+  const avg = tempos.length ? tempos.reduce((a,b)=>a+b,0)/tempos.length : null;
+  const times = list.map(t=> new Date(t.createdAt).getTime());
+  const startMs = days ? lim : (times.length ? Math.min.apply(null, times) : now - 30*86400000);
+  const lateRows = late.slice().sort((a,b)=> slaInfo(a).remaining - slaInfo(b).remaining).map(t=>{
+    const p = getPredio(t.predioId);
+    return { id:t.id, sala: ticketLocLabel(t), predio: p ? p.nome : "—", quem: t.reporter || "—", situacao: slaInfo(t).label, ativo: t.status!=='resolvido' };
+  });
+  return {
+    total, ativos: total - resolvidos.length, resolvidos: resolvidos.length,
+    noPrazo, foraPrazo: late.length, pctNoPrazo: total ? Math.round(noPrazo/total*100) : 0,
+    avgLabel: avg===null ? "—" : fmtDur(avg), finalizados: list.filter(t=>t.finalizado).length,
+    topReporters: count(list, t=>t.reporter || "—").slice(0,10),
+    byPredio: count(list, t=>{ const p = getPredio(t.predioId); return p ? p.nome : "Sem prédio"; }),
+    byCategoria: count(list, t=>categoriaLabel(t)).slice(0,10),
+    byPilar: count(list.filter(t=>t.origem==='qrcode'), t=>t.reporterPilar || "Sem pilar"),
+    series: dBuckets(times, startMs, now),
+    lateRows
+  };
+}
+
+function dashCharts(D){
+  const unit = D.series.unit==='day' ? 'dia' : (D.series.unit==='week' ? 'semana' : 'mês');
+  const arr = [
+    { id:'prazo', title:'Prazo para abrir a OS (SLA de ' + SLA_DIAS + ' dias)',
+      svg: dDonut([{label:'No prazo', value:D.noPrazo, color:DC.ok},{label:'Fora do prazo', value:D.foraPrazo, color:DC.alert}], D.pctNoPrazo + '%', 'no prazo') },
+    { id:'quem', title:'Quem mais abriu chamados', svg: dBarsH(D.topReporters) },
+    { id:'predio', title:'Chamados por prédio', svg: dBarsH(D.byPredio) },
+    { id:'tempo', title:'Chamados abertos por ' + unit, svg: dColumns(D.series.items) },
+    { id:'categoria', title:'Chamados por categoria', svg: dBarsH(D.byCategoria) }
+  ];
+  if(D.byPilar.length) arr.push({ id:'pilar', title:'Chamados de colaboradores por pilar', svg: dBarsH(D.byPilar) });
+  return arr;
+}
+
+function renderViewTabs(){
+  return `<div class="viewTabs">
+    <button class="vtab ${state.view==='lista'?'active':''}" data-view="lista">Chamados</button>
+    <button class="vtab ${state.view==='dash'?'active':''}" data-view="dash">Dashboard</button>
+  </div>`;
+}
+
+function renderDashboard(){
+  if(state.loading) return `<div class="loadingWrap">Carregando…</div>`;
+  const D = dashCompute();
+  const charts = dashCharts(D);
+  state._dash = { D, charts };
+  const d = state.dash;
+  const sel = (id, opts, val) => `<select id="${id}">${opts.map(([v,l])=>`<option value="${escapeHtml(v)}" ${v===val?'selected':''}>${escapeHtml(l)}</option>`).join("")}</select>`;
+  const kpi = (v, l, cls) => `<div class="kpi"><div class="kv ${cls||''}">${escapeHtml(String(v))}</div><div class="kl">${escapeHtml(l)}</div></div>`;
+  return `
+  <div class="dashBar">
+    <div class="dashFilters">
+      <div class="field">${'<label for="dPeriodo">Período</label>'}${sel('dPeriodo', DASH_PERIODOS, d.periodo)}</div>
+      <div class="field"><label for="dPredio">Prédio</label>${sel('dPredio', [["todos","Todos os prédios"]].concat(PREDIOS.map(p=>[p.id,p.nome])), d.predio)}</div>
+      <div class="field"><label for="dOrigem">Origem</label>${sel('dOrigem', DASH_ORIGENS, d.origem)}</div>
+    </div>
+    <button class="btn primary" id="btnPptx">${ICON.download} Baixar apresentação (.pptx)</button>
+  </div>
+  <div class="kpiGrid">
+    ${kpi(D.total, 'Chamados abertos', 'blue')}
+    ${kpi(D.ativos, 'Ativos agora')}
+    ${kpi(D.pctNoPrazo + '%', 'No prazo', 'ok')}
+    ${kpi(D.foraPrazo, 'Fora do prazo', D.foraPrazo>0 ? 'bad' : '')}
+    ${kpi(D.avgLabel, 'Tempo médio até abrir a OS')}
+    ${kpi(D.finalizados, 'Finalizados no Hexagon')}
+  </div>
+  <div class="chartGrid">
+    ${charts.map(c=>`
+    <div class="chartCard">
+      <div class="chartHead"><span>${escapeHtml(c.title)}</span><button class="iconBtn small" data-png="${c.id}" title="Baixar este gráfico (PNG)">${ICON.download}</button></div>
+      <div class="chartSvg">${c.svg}</div>
+    </div>`).join("")}
+  </div>
+  <div class="chartCard" style="margin-top:14px;">
+    <div class="chartHead"><span>Chamados fora do prazo (${D.lateRows.length})</span></div>
+    ${D.lateRows.length ? `
+    <div style="overflow-x:auto;"><table class="lateTable">
+      <thead><tr><th>Local</th><th>Prédio</th><th>Quem abriu</th><th>Situação</th></tr></thead>
+      <tbody>${D.lateRows.slice(0,20).map(r=>`<tr data-open="${r.id}"><td>${escapeHtml(r.sala)}</td><td>${escapeHtml(r.predio)}</td><td>${escapeHtml(r.quem)}</td><td><span class="slaChip ${r.ativo?'late':'warn'}" style="margin-top:0;">${escapeHtml(r.situacao)}</span></td></tr>`).join("")}</tbody>
+    </table></div>
+    ${D.lateRows.length>20 ? `<p style="font-size:12.5px;color:var(--ink-soft);margin:8px 0 0;">Mostrando os 20 mais atrasados de ${D.lateRows.length}.</p>` : ""}`
+    : `<p style="margin:6px 0 0;color:var(--ok);font-weight:600;">Nenhum chamado fora do prazo neste filtro.</p>`}
+  </div>
+  <p style="font-size:12px;color:var(--ink-faint);margin-top:12px;">"No prazo" = a OS foi aberta em até ${SLA_DIAS} dias da criação do chamado, ou o chamado ainda está dentro desses ${SLA_DIAS} dias. Os números consideram os chamados criados no período escolhido.</p>`;
+}
+
+function downloadChartPng(id){
+  const ch = ((state._dash && state._dash.charts) || []).find(c=>c.id===id);
+  if(!ch) return;
+  const m = ch.svg.match(/viewBox="0 0 (\d+) (\d+)"/);
+  const w = m ? parseInt(m[1],10) : 640, h = m ? parseInt(m[2],10) : 260;
+  const titleH = 44;
+  const img = new Image();
+  img.onload = () => {
+    const cv = document.createElement('canvas');
+    cv.width = w*2; cv.height = (h+titleH)*2;
+    const ctx = cv.getContext('2d');
+    ctx.fillStyle = '#FFFFFF'; ctx.fillRect(0,0,cv.width,cv.height);
+    ctx.fillStyle = '#14161A'; ctx.font = '700 36px Arial, Helvetica, sans-serif'; ctx.textBaseline = 'middle';
+    ctx.fillText(ch.title, 32, titleH);
+    ctx.drawImage(img, 0, titleH*2, w*2, h*2);
+    cv.toBlob(b => {
+      if(!b){ toast("Não foi possível gerar a imagem."); return; }
+      const a = document.createElement('a');
+      a.href = URL.createObjectURL(b); a.download = 'ronda-' + id + '.png';
+      document.body.appendChild(a); a.click(); a.remove();
+      setTimeout(()=>URL.revokeObjectURL(a.href), 2000);
+    }, 'image/png');
+  };
+  img.onerror = () => toast("Não foi possível gerar a imagem.");
+  img.src = 'data:image/svg+xml;charset=utf-8,' + encodeURIComponent(ch.svg);
+}
+
+async function loadPptxLib(){
+  if(window.PptxGenJS) return window.PptxGenJS;
+  const urls = [
+    'https://cdn.jsdelivr.net/npm/pptxgenjs@3.12.0/dist/pptxgen.bundle.js',
+    'https://cdnjs.cloudflare.com/ajax/libs/pptxgenjs/3.12.0/pptxgen.bundle.js'
+  ];
+  for(const u of urls){
+    try{
+      await new Promise((res, rej) => { const s = document.createElement('script'); s.src = u; s.onload = res; s.onerror = rej; document.head.appendChild(s); });
+      if(window.PptxGenJS) return window.PptxGenJS;
+    }catch(e){}
+  }
+  return null;
+}
+
+async function exportPptx(){
+  if(!state._dash) return;
+  toast("Gerando a apresentação…");
+  const Pptx = await loadPptxLib();
+  if(!Pptx){ toast("Não consegui carregar o gerador de apresentação (precisa de internet)."); return; }
+  const info = Object.assign({}, dashLabels(), { geradoEm: new Date().toLocaleString('pt-BR'), sla: SLA_DIAS });
+  try{
+    const p = dBuildPptx(Pptx, state._dash.D, info);
+    await p.writeFile({ fileName: 'ronda-painel-' + new Date().toISOString().slice(0,10) + '.pptx' });
+  }catch(e){
+    console.error(e);
+    toast("Não foi possível gerar a apresentação.");
+  }
+}
+
+
 /* Deriva um nome padrão e consistente a partir do e-mail de login,
    pra ninguém precisar digitar o nome (ex.: "jessica.silva@empresa.com" -> "Jessica Silva") */
 function nameFromEmail(email){
@@ -1595,6 +2190,13 @@ function init(){
   });
 }
 init();
+// atualiza os contadores de SLA a cada minuto, sem atrapalhar quem está digitando ou com janela aberta
+setInterval(()=>{
+  const tag = document.activeElement ? document.activeElement.tagName : "";
+  if(state.showNewModal || state.detailId || /INPUT|TEXTAREA|SELECT/.test(tag)) return;
+  if(!TEST_MODE && !state.user) return;
+  render();
+}, 60000);
 </script>
 </body>
 </html>
